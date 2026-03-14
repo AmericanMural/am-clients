@@ -1,0 +1,39 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
+
+import ProjectPresentation from "../../components/ProjectPresentation.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+type Props = {
+  project: CollectionEntry<"projects">;
+};
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects");
+
+  return projects.map((project) => ({
+    params: {
+      slug: project.slug,
+    },
+    props: {
+      project,
+    },
+  }));
+}
+
+const { project } = Astro.props as Props;
+
+if (project.data.template !== "room-loop") {
+  throw new Error(`Unsupported project template: ${project.data.template}`);
+}
+---
+
+<BaseLayout title={`${project.data.title} | AM Clients`} description={project.data.description}>
+  <ProjectPresentation
+    title={project.data.title}
+    description={project.data.description}
+    walls={project.data.walls}
+    ceiling={project.data.ceiling}
+  />
+</BaseLayout>

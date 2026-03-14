@@ -1,17 +1,30 @@
 {
   "name": "am-clients",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "test": "vitest"
+    "dev": "portless run --name am-clients astro dev",
+    "start": "portless run --name am-clients astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
+    "test": "npm run test:unit && npm run test:e2e"
   },
   "dependencies": {
-    "three": "^0.181.1"
+    "astro": "^5.18.0",
+    "embla-carousel": "^8.6.0",
+    "phosphor-astro": "^2.1.0",
+    "three": "^0.183.2",
+    "zod": "^4.1.11"
   },
   "devDependencies": {
-    "vite": "^6.3.5",
+    "@astrojs/check": "^0.9.6",
+    "@playwright/test": "^1.56.1",
+    "@types/three": "^0.183.1",
+    "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   }
 }

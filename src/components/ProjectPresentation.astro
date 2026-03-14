@@ -1,0 +1,889 @@
+---
+import type { ImageMetadata } from "astro";
+import Moon from "phosphor-astro/Moon.astro";
+import Sun from "phosphor-astro/Sun.astro";
+import House from "phosphor-astro/House.astro";
+import Plus from "phosphor-astro/Plus.astro";
+import Minus from "phosphor-astro/Minus.astro";
+import HandTap from "phosphor-astro/HandTap.astro";
+
+type ProjectImage = {
+  image: ImageMetadata;
+  alt: string;
+  label?: string;
+};
+
+type Props = {
+  title: string;
+  description?: string;
+  walls: ProjectImage[];
+  ceiling?: ProjectImage;
+};
+
+const { title, description, walls, ceiling } = Astro.props;
+const galleryItems = ceiling ? [...walls, ceiling] : walls;
+const room3dConfig = {
+  title,
+  wallHeight: 10,
+  walls: walls.map((wall, index) => ({
+    id: `wall-${index + 1}`,
+    label: wall.label ?? `Wall ${index + 1}`,
+    order: index + 1,
+    src: wall.image.src,
+    width: wall.image.width,
+    height: wall.image.height,
+  })),
+  ceiling: ceiling
+    ? {
+        id: "ceiling",
+        label: ceiling.label ?? "Ceiling",
+        src: ceiling.image.src,
+        width: ceiling.image.width,
+        height: ceiling.image.height,
+      }
+    : undefined,
+};
+---
+
+<main data-presentation data-active-view="slider">
+  <section
+    class="room"
+    data-room-loop
+    data-current-index="0"
+    data-slide-count={walls.length}
+    tabindex="0"
+    aria-label={`${title} interactive room viewer`}
+  >
+    <div class="room__menu">
+      <div class="room__menu-row">
+        <div class="room__mode-buttons" role="tablist" aria-label="Presentation views">
+          <button type="button" class="room__mode-button" data-view-trigger="slider" aria-pressed="true">
+            Slider
+          </button>
+          <button type="button" class="room__mode-button" data-view-trigger="3d" aria-pressed="false">
+            3D
+          </button>
+          <button type="button" class="room__mode-button" data-view-trigger="gallery" aria-pressed="false">
+            Gallery
+          </button>
+        </div>
+
+        <button
+          type="button"
+          class="room__theme-toggle"
+          data-theme-toggle
+          aria-label="Switch to dark mode"
+          aria-pressed="false"
+        >
+          <span class="room__sr-only" data-theme-toggle-label>Dark mode</span>
+          <span class="room__theme-icon" data-theme-icon="moon" aria-hidden="true">
+            <Moon width={18} height={18} />
+          </span>
+          <span class="room__theme-icon" data-theme-icon="sun" aria-hidden="true">
+            <Sun width={18} height={18} />
+          </span>
+        </button>
+      </div>
+      {description && <p class="room__description">{description}</p>}
+    </div>
+
+    <div class="room__viewstack">
+      <div class="room__view room__view--slider" data-view-panel="slider">
+        <div class="room__viewport" data-room-loop-viewport>
+          <div class="room__container">
+            {
+              walls.map((wall, index) => (
+                <figure
+                  class="room__slide"
+                  data-wall-slide
+                  data-slide-index={index}
+                  data-slide-label={wall.label ?? `Wall ${index + 1}`}
+                >
+                  <img
+                    src={wall.image.src}
+                    width={wall.image.width}
+                    height={wall.image.height}
+                    alt={wall.alt}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    decoding="async"
+                    fetchpriority={index === 0 ? "high" : "auto"}
+                  />
+                </figure>
+              ))
+            }
+          </div>
+        </div>
+
+        <div class="room__caption-row">
+          <p class="room__caption" data-room-loop-caption>
+            {walls[0]?.label ?? "Wall 1"}
+          </p>
+          <p class="room__hint" data-slider-hint>Drag, swipe or scroll</p>
+        </div>
+
+        <div class="room__toolbar">
+          <div class="room__controls">
+            <button type="button" data-room-loop-prev aria-label="Previous wall">
+              Prev
+            </button>
+            <button type="button" data-room-loop-next aria-label="Next wall">
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="room__view room__view--3d" data-view-panel="3d" hidden>
+        <div class="room__three-wrap" data-room-3d>
+          <canvas class="room__three-canvas" data-room-3d-canvas aria-label={`3D room view of ${title}`}></canvas>
+          <div class="room__three-nav" data-room-3d-nav>
+            <div class="room__zoom-group">
+              <button type="button" data-room-3d-zoom-in aria-label="Zoom in">
+                <Plus width={16} height={16} />
+              </button>
+              <input
+                type="range"
+                class="room__zoom-slider"
+                data-room-3d-zoom-slider
+                min="0"
+                max="100"
+                value="50"
+                orient="vertical"
+                aria-label="Zoom level"
+              />
+              <button type="button" data-room-3d-zoom-out aria-label="Zoom out">
+                <Minus width={16} height={16} />
+              </button>
+            </div>
+            <button type="button" data-room-3d-home aria-label="Reset view">
+              <House width={16} height={16} />
+            </button>
+          </div>
+          <p class="room__three-hint" data-room-3d-hint>
+            <HandTap width={28} height={28} weight="fill" />
+            Click and drag to look around
+          </p>
+          <div class="room__three-loader" data-room-3d-status aria-live="polite">
+            <svg class="room__spinner" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="50 20" />
+            </svg>
+            <span class="room__three-loader-text">Loading room…</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="room__view room__view--gallery" data-view-panel="gallery" hidden>
+        <div class="room__gallery" data-gallery-grid>
+          <div class="room__gallery-inner">
+            {
+              galleryItems.map((item, index) => (
+                <button
+                  type="button"
+                  class="room__gallery-item"
+                  data-gallery-item
+                  data-gallery-src={item.image.src}
+                  data-gallery-alt={item.alt}
+                  data-gallery-label={item.label ?? `Image ${index + 1}`}
+                >
+                  <img
+                    src={item.image.src}
+                    width={item.image.width}
+                    height={item.image.height}
+                    alt={item.alt}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span>{item.label ?? `Image ${index + 1}`}</span>
+                </button>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="room__heading">
+      <p class="room__eyebrow">Client presentation</p>
+      <h1>{title}</h1>
+    </footer>
+
+    <dialog class="room__lightbox" data-gallery-lightbox>
+      <form method="dialog" class="room__lightbox-inner">
+        <button type="submit" class="room__lightbox-close" aria-label="Close image">
+          Close
+        </button>
+      </form>
+      <figure class="room__lightbox-figure">
+        <img data-gallery-lightbox-image alt="" />
+        <figcaption data-gallery-lightbox-caption></figcaption>
+      </figure>
+    </dialog>
+
+    <script type="application/json" data-room-3d-config is:inline set:html={JSON.stringify(room3dConfig)} />
+  </section>
+</main>
+
+<style>
+  .room {
+    --room-inset: 1.1rem;
+    width: 100%;
+    height: 100dvh;
+    min-height: 100dvh;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    background: var(--bg-0);
+    outline: none;
+    position: relative;
+  }
+
+  .room:focus-visible {
+    box-shadow: 0 0 0 0.15rem rgba(61, 52, 39, 0.12) inset;
+  }
+
+  :root[data-theme="dark"] .room {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)),
+      rgba(9, 9, 10, 0.72);
+  }
+
+  :root[data-theme="dark"] .room:focus-visible {
+    box-shadow: 0 0 0 0.15rem rgba(255, 255, 255, 0.22) inset;
+  }
+
+  .room__menu {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.8rem;
+    z-index: 5;
+    display: grid;
+    gap: 0.35rem;
+    pointer-events: auto;
+  }
+
+  .room__menu-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .room__heading {
+    padding: 0.9rem var(--room-inset) 1.4rem;
+    border-top: 0.5px solid var(--line-soft);
+    background: var(--bg-0);
+  }
+
+  :root[data-theme="dark"] .room__heading {
+    background: rgba(15, 15, 17, 0.95);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .room__eyebrow,
+  .room__description,
+  .room__gallery-item span {
+    margin: 0;
+    color: var(--ink-1);
+  }
+
+  .room__eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 0.62rem;
+  }
+
+  h1 {
+    margin: 0.1rem 0 0;
+    font-size: 1.3rem;
+    letter-spacing: -0.02em;
+  }
+
+  .room__mode-buttons {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .room__mode-button,
+  .room__theme-toggle,
+  .room__controls button,
+  .room__three-nav button,
+  .room__lightbox-close {
+    border: 0.75px solid var(--line-soft);
+    border-radius: 999px;
+    background: var(--bg-0);
+    color: var(--ink-0);
+    font: inherit;
+    transition:
+      background-color 160ms ease,
+      border-color 160ms ease,
+      transform 160ms ease;
+  }
+
+  .room__mode-button {
+    border-color: var(--line-soft);
+    padding: 0.58rem 0.9rem;
+    min-height: 2.4rem;
+  }
+
+  .room__mode-button[aria-pressed="true"] {
+    border-color: var(--line-strong);
+    box-shadow: inset 0 0 0 1px rgba(61, 52, 39, 0.05);
+  }
+
+  .room__theme-toggle {
+    justify-self: start;
+    padding: 0.58rem;
+    min-height: 2.5rem;
+    min-width: 2.5rem;
+    display: inline-grid;
+    place-items: center;
+  }
+
+  :root[data-theme="dark"] .room__mode-button,
+  :root[data-theme="dark"] .room__theme-toggle,
+  :root[data-theme="dark"] .room__controls button,
+  :root[data-theme="dark"] .room__three-nav button,
+  :root[data-theme="dark"] .room__lightbox-close {
+    background: rgba(15, 15, 17, 0.72);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .room__mode-button:hover,
+  .room__mode-button:focus-visible,
+  .room__theme-toggle:hover,
+  .room__theme-toggle:focus-visible,
+  .room__controls button:hover,
+  .room__controls button:focus-visible,
+  .room__three-nav button:hover,
+  .room__three-nav button:focus-visible,
+  .room__lightbox-close:hover,
+  .room__lightbox-close:focus-visible {
+    border-color: var(--line-strong);
+    outline: none;
+    transform: translateY(-1px);
+  }
+
+  :root[data-theme="dark"] .room__mode-button:hover,
+  :root[data-theme="dark"] .room__mode-button:focus-visible,
+  :root[data-theme="dark"] .room__theme-toggle:hover,
+  :root[data-theme="dark"] .room__theme-toggle:focus-visible,
+  :root[data-theme="dark"] .room__controls button:hover,
+  :root[data-theme="dark"] .room__controls button:focus-visible,
+  :root[data-theme="dark"] .room__three-nav button:hover,
+  :root[data-theme="dark"] .room__three-nav button:focus-visible,
+  :root[data-theme="dark"] .room__lightbox-close:hover,
+  :root[data-theme="dark"] .room__lightbox-close:focus-visible {
+    background: rgba(15, 15, 17, 0.85);
+    border-color: rgba(255, 255, 255, 0.28);
+  }
+
+  .room__theme-icon {
+    display: inline-grid;
+    place-items: center;
+    line-height: 0;
+  }
+
+  [data-theme-icon="sun"] {
+    display: none;
+  }
+
+  :root[data-theme="dark"] [data-theme-icon="moon"] {
+    display: none;
+  }
+
+  :root[data-theme="dark"] [data-theme-icon="sun"] {
+    display: inline-grid;
+  }
+
+  .room__sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .room__viewstack,
+  .room__view {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .room__view {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto auto;
+    gap: 0.7rem;
+  }
+
+  .room__view--slider,
+  .room__view--gallery {
+    padding: calc(var(--room-inset) + 3rem) var(--room-inset) var(--room-inset);
+  }
+
+  .room__view--3d {
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .room__view--gallery {
+    grid-template-rows: minmax(0, 1fr);
+    padding-inline: 0;
+    padding-bottom: 0;
+    overflow: hidden;
+  }
+
+  .room__view[hidden] {
+    display: none;
+  }
+
+  .room__viewport {
+    overflow: hidden;
+    border-radius: 1rem;
+    border: 0.75px solid var(--line-soft);
+    background: var(--bg-0);
+    min-height: 0;
+  }
+
+  :root[data-theme="dark"] .room__viewport {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01)),
+      rgba(0, 0, 0, 0.24);
+  }
+
+  .room__three-wrap {
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  .room__container {
+    display: flex;
+    gap: 1px;
+    align-items: stretch;
+    height: 100%;
+    padding: 0;
+  }
+
+  .room__slide {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
+  }
+
+  .room__slide img {
+    width: auto;
+    height: 100%;
+    max-width: none;
+    border-radius: 0;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .room__caption {
+    margin: 0;
+    font-size: 0.9rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-1);
+  }
+
+  .room__caption-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    padding-left: 0.35rem;
+  }
+
+  .room__hint {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--ink-1);
+    text-align: right;
+  }
+
+  .room__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.85rem;
+    align-items: center;
+  }
+
+  .room__controls {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .room__controls button {
+    min-width: 4.5rem;
+    padding: 0.68rem 0.95rem;
+  }
+
+  .room__three-wrap {
+    position: relative;
+    min-height: 100%;
+  }
+
+  .room__three-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+  }
+
+  .room__three-hint {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    font-size: 1.25rem;
+    letter-spacing: 0.03em;
+    color: white;
+    text-shadow:
+      0 0 12px rgba(0, 0, 0, 0.5),
+      0 0 40px rgba(0, 0, 0, 0.25);
+    pointer-events: none;
+    transition: opacity 1.2s ease;
+  }
+
+  .room__three-hint svg {
+    filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.4));
+  }
+
+  .room__three-hint[hidden] {
+    display: flex;
+    opacity: 0;
+  }
+
+  .room__three-nav {
+    position: absolute;
+    bottom: 0.8rem;
+    right: 0.8rem;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    align-items: center;
+  }
+
+  .room__three-nav button {
+    padding: 0.5rem;
+    min-height: 2.2rem;
+    min-width: 2.2rem;
+    display: inline-grid;
+    place-items: center;
+    line-height: 0;
+  }
+
+  .room__zoom-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    border-radius: 999px;
+    border: 0.75px solid var(--line-soft);
+    background: var(--bg-0);
+    padding: 0.25rem 0;
+    transition:
+      background-color 160ms ease,
+      border-color 160ms ease;
+  }
+
+  .room__zoom-group button {
+    border: none;
+    background: none;
+    border-radius: 0;
+  }
+
+  :root[data-theme="dark"] .room__zoom-group {
+    background: rgba(15, 15, 17, 0.72);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  :root[data-theme="dark"] .room__zoom-group button {
+    background: none;
+    border-color: transparent;
+  }
+
+  .room__zoom-slider {
+    writing-mode: vertical-lr;
+    direction: rtl;
+    width: 2.2rem;
+    height: 5rem;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    margin: 0;
+  }
+
+  .room__zoom-slider::-webkit-slider-runnable-track {
+    width: 3px;
+    background: var(--line-soft);
+    border-radius: 2px;
+  }
+
+  .room__zoom-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--ink-1);
+    border: 1.5px solid var(--bg-0);
+    margin-left: -4.5px;
+  }
+
+  .room__zoom-slider::-moz-range-track {
+    width: 3px;
+    background: var(--line-soft);
+    border-radius: 2px;
+  }
+
+  .room__zoom-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--ink-1);
+    border: 1.5px solid var(--bg-0);
+  }
+
+  :root[data-theme="dark"] .room__zoom-slider::-webkit-slider-thumb {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(15, 15, 17, 0.72);
+  }
+
+  :root[data-theme="dark"] .room__zoom-slider::-moz-range-thumb {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(15, 15, 17, 0.72);
+  }
+
+  .room__three-loader {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    pointer-events: none;
+    color: var(--ink-1);
+  }
+
+  .room__three-loader[hidden] {
+    display: none;
+  }
+
+  .room__three-loader-text {
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .room__spinner {
+    width: 1.8rem;
+    height: 1.8rem;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .room__gallery {
+    overflow: auto;
+    border-top: 0.75px solid var(--line-soft);
+  }
+
+  .room__gallery-inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    max-width: 40rem;
+    margin-inline: auto;
+    padding: var(--room-inset);
+    padding-top: 1.6rem;
+    gap: 0.8rem;
+  }
+
+  .room__gallery-item {
+    display: grid;
+    gap: 0.55rem;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+  }
+
+  .room__gallery-item img {
+    width: 100%;
+    height: auto;
+    border-radius: 0.7rem;
+  }
+
+  .room__gallery-item span {
+    font-size: 0.84rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .room__lightbox {
+    width: min(92vw, 78rem);
+    max-width: none;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .room__lightbox::backdrop {
+    background: rgba(17, 15, 12, 0.72);
+    backdrop-filter: blur(6px);
+  }
+
+  .room__lightbox-inner {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 2;
+  }
+
+  .room__lightbox-close {
+    padding: 0.65rem 0.95rem;
+  }
+
+  .room__lightbox-figure {
+    margin: 0;
+    display: grid;
+    gap: 0.8rem;
+    justify-items: center;
+  }
+
+  .room__lightbox-figure img {
+    width: 100%;
+    max-height: 84svh;
+    object-fit: contain;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.92);
+  }
+
+  .room__lightbox-figure figcaption {
+    color: white;
+    font-size: 0.92rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+
+
+  @media (max-width: 44rem) {
+    .room {
+      --room-inset: 0.85rem;
+    }
+
+    .room__controls {
+      width: 100%;
+    }
+
+    .room__controls button {
+      flex: 1 1 0;
+    }
+
+    .room__toolbar {
+      align-items: stretch;
+    }
+  }
+
+  @media (max-height: 28rem) and (orientation: landscape) {
+    .room {
+      --room-inset: 0.55rem;
+    }
+
+    .room__heading {
+      gap: 0.35rem;
+    }
+
+    .room__eyebrow {
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+    }
+
+    h1 {
+      margin-top: 0.05rem;
+      font-size: 1.375rem;
+    }
+
+    .room__menu {
+      gap: 0.2rem;
+    }
+
+    .room__menu-row {
+      gap: 0.4rem;
+    }
+
+    .room__mode-buttons {
+      gap: 0.3rem;
+    }
+
+    .room__mode-button {
+      min-height: 2rem;
+      padding: 0.45rem 0.7rem;
+      font-size: 0.8rem;
+    }
+
+    .room__hint,
+    .room__gallery-item span {
+      font-size: 0.8125rem;
+    }
+
+    .room__theme-toggle {
+      min-height: 2.1rem;
+      min-width: 2.1rem;
+      padding: 0.42rem;
+    }
+
+    .room__viewport {
+      border-radius: 0.8rem;
+    }
+
+    .room__caption {
+      font-size: 0.8rem;
+    }
+
+    .room__caption-row {
+      padding-left: 0.15rem;
+      gap: 0.35rem;
+    }
+
+    .room__toolbar {
+      gap: 0.45rem;
+    }
+
+    .room__controls {
+      gap: 0.35rem;
+    }
+
+    .room__controls button {
+      min-width: 3.5rem;
+      padding: 0.45rem 0.72rem;
+      font-size: 0.82rem;
+    }
+  }
+</style>
+
+<script>
+  import "../scripts/room-loop";
+  import "../scripts/theme-toggle";
+  import "../scripts/project-presentation";
+</script>

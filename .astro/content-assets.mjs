@@ -1,0 +1,8 @@
+
+import __ASTRO_IMAGE_IMPORT_Z1cDpmU from "../../assets/projects/groh-fde1/Groh-FDE1-1.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Fprojects%2Fgroh-fde1.md";
+import __ASTRO_IMAGE_IMPORT_Z1bEMuI from "../../assets/projects/groh-fde1/Groh-FDE1-2.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Fprojects%2Fgroh-fde1.md";
+import __ASTRO_IMAGE_IMPORT_Z1aGaCw from "../../assets/projects/groh-fde1/Groh-FDE1-3.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Fprojects%2Fgroh-fde1.md";
+import __ASTRO_IMAGE_IMPORT_Z19HxKk from "../../assets/projects/groh-fde1/Groh-FDE1-4.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Fprojects%2Fgroh-fde1.md";
+import __ASTRO_IMAGE_IMPORT_1mUOEk from "../../assets/projects/groh-fde1/Groh-FDE1-ceiling.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Fprojects%2Fgroh-fde1.md";
+export default new Map([["../../assets/projects/groh-fde1/Groh-FDE1-1.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Fprojects%2Fgroh-fde1.md", __ASTRO_IMAGE_IMPORT_Z1cDpmU], ["../../assets/projects/groh-fde1/Groh-FDE1-2.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Fprojects%2Fgroh-fde1.md", __ASTRO_IMAGE_IMPORT_Z1bEMuI], ["../../assets/projects/groh-fde1/Groh-FDE1-3.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Fprojects%2Fgroh-fde1.md", __ASTRO_IMAGE_IMPORT_Z1aGaCw], ["../../assets/projects/groh-fde1/Groh-FDE1-4.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Fprojects%2Fgroh-fde1.md", __ASTRO_IMAGE_IMPORT_Z19HxKk], ["../../assets/projects/groh-fde1/Groh-FDE1-ceiling.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Fprojects%2Fgroh-fde1.md", __ASTRO_IMAGE_IMPORT_1mUOEk]]);
+		

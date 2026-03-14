@@ -1,0 +1,66 @@
+:root {
+  color-scheme: light;
+  --bg-0: #fcfbf8;
+  --bg-1: #fcfbf8;
+  --bg-2: #fcfbf8;
+  --ink-0: rgba(35, 29, 21, 0.96);
+  --ink-1: rgba(65, 57, 45, 0.72);
+  --line-soft: rgba(61, 52, 39, 0.1);
+  --line-strong: rgba(61, 52, 39, 0.18);
+  --shadow-soft: 0 24px 80px rgba(72, 58, 36, 0.14);
+  font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", Helvetica, sans-serif;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg-0: #0f0f10;
+  --bg-1: #19191b;
+  --bg-2: #242428;
+  --ink-0: rgba(255, 255, 255, 0.96);
+  --ink-1: rgba(255, 255, 255, 0.68);
+  --line-soft: rgba(255, 255, 255, 0.12);
+  --line-strong: rgba(255, 255, 255, 0.2);
+  --shadow-soft: 0 24px 80px rgba(0, 0, 0, 0.32);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--bg-0);
+  color: var(--ink-0);
+}
+
+:root[data-theme="dark"] body {
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.06), transparent 36%),
+    linear-gradient(180deg, var(--bg-2), var(--bg-0) 52%, #090909 100%);
+}
+
+body,
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
