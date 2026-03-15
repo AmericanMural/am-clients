@@ -159,7 +159,7 @@ async function initializeRoom3D(root: HTMLElement) {
   controls.enableDamping = true;
   controls.enablePan = true;
   controls.dampingFactor = 0.08;
-  controls.rotateSpeed = 0.58;
+  controls.rotateSpeed = -0.58;
   controls.zoomSpeed = 0.82;
   controls.panSpeed = 0.75;
   controls.minDistance = 0.25;
