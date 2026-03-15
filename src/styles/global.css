@@ -29,6 +29,14 @@
 
 * {
   box-sizing: border-box;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+input,
+textarea {
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 html,
@@ -59,6 +67,15 @@ input,
 textarea,
 select {
   font: inherit;
+}
+
+a,
+button,
+input,
+select,
+textarea,
+label {
+  touch-action: manipulation;
 }
 
 a {
