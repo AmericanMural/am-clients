@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
+import { getImage } from "astro:assets";
 
 import ProjectPresentation from "../../components/ProjectPresentation.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
@@ -27,9 +28,15 @@ const { project } = Astro.props as Props;
 if (project.data.template !== "room-loop") {
   throw new Error(`Unsupported project template: ${project.data.template}`);
 }
+
+const heroImage = await getImage({
+  src: project.data.walls[0].image,
+  format: "webp",
+  quality: 85,
+});
 ---
 
-<BaseLayout title={`${project.data.title} | AM Clients`} description={project.data.description}>
+<BaseLayout title={`${project.data.title} | AM Clients`} description={project.data.description} preloadImage={heroImage.src}>
   <ProjectPresentation
     title={project.data.title}
     description={project.data.description}

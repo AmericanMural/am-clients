@@ -20,3 +20,19 @@ Running memory for the American Mural client management system. Any tool (Claude
 - Deployed on Cloudflare Pages at https://am-clients.pages.dev/ (auto-deploys from main)
 - Security for the app (mentioned but deferred)
 - 3D hint uses phosphor-astro HandTap icon
+
+## 2026-03-15
+
+**What changed:**
+- Performance: Lighthouse 64 → ~91 (images WebP via Astro `<Image>`, Three.js code-split with dynamic import, CSS inlined, LCP image + font preloaded)
+- Added `public/robots.txt` — `Disallow: /` (private client site, no crawling)
+- `astro.config.mjs`: `inlineStylesheets: "always"`
+- `BaseLayout.astro`: preloads Montserrat latin woff2 + optional hero image
+- `[slug].astro`: resolves hero image via `getImage()` for preload hint
+- `ProjectPresentation.astro`: uses `<Image>` component (format webp, quality 85) instead of raw `<img>`
+- `project-presentation.ts`: Three.js + OrbitControls loaded via dynamic `import()` only when 3D tab clicked (initial JS 526KB → 30KB)
+
+**What matters next:**
+- LCP (~1.8–3.8s under Lighthouse throttling) is the remaining perf ceiling — driven by hero image size, acceptable given quality requirements
+- If buttons stop working in dev, clear Vite cache: `rm -rf node_modules/.vite`
+- Three.js chunk warning (>500KB) is expected — it's lazy-loaded so doesn't affect initial page

@@ -1,5 +1,6 @@
 ---
 import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
 import Moon from "phosphor-astro/Moon.astro";
 import Sun from "phosphor-astro/Sun.astro";
 import House from "phosphor-astro/House.astro";
@@ -119,11 +120,11 @@ const room3dConfig = {
                     data-slide-index={index}
                     data-slide-label={wall.label ?? `Wall ${index + 1}`}
                   >
-                    <img
-                      src={wall.image.src}
-                      width={wall.image.width}
-                      height={wall.image.height}
+                    <Image
+                      src={wall.image}
                       alt={wall.alt}
+                      format="webp"
+                      quality={85}
                       loading={index === 0 ? "eager" : "lazy"}
                       decoding="async"
                       fetchpriority={index === 0 ? "high" : undefined}
@@ -206,11 +207,11 @@ const room3dConfig = {
                   data-gallery-alt={item.alt}
                   data-gallery-label={item.label ?? `Image ${index + 1}`}
                 >
-                  <img
-                    src={item.image.src}
-                    width={item.image.width}
-                    height={item.image.height}
+                  <Image
+                    src={item.image}
                     alt={item.alt}
+                    format="webp"
+                    quality={85}
                     loading="lazy"
                     decoding="async"
                   />

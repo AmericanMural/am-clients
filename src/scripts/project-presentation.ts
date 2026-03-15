@@ -1,6 +1,3 @@
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-
 type PresentationRoot = HTMLElement & {
   __presentationCleanup?: () => void;
 };
@@ -21,16 +18,6 @@ type Room3DConfig = {
   ceiling?: RoomImage;
 };
 
-type SurfaceSpec = {
-  id: string;
-  label: string;
-  src: string;
-  width: number;
-  height: number;
-  position: THREE.Vector3;
-  rotation: THREE.Euler;
-};
-
 const average = (values: number[]) =>
   values.reduce((sum, value) => sum + value, 0) / values.length;
 
@@ -43,7 +30,35 @@ function cleanupPresentations() {
   });
 }
 
-function buildSurfaceSpecs(config: Room3DConfig) {
+async function initializeRoom3D(root: HTMLElement) {
+  const container = root.querySelector<HTMLElement>("[data-room-3d]");
+  const canvas = root.querySelector<HTMLCanvasElement>("[data-room-3d-canvas]");
+  const homeButton = root.querySelector<HTMLButtonElement>("[data-room-3d-home]");
+  const zoomInBtn = root.querySelector<HTMLButtonElement>("[data-room-3d-zoom-in]");
+  const zoomOutBtn = root.querySelector<HTMLButtonElement>("[data-room-3d-zoom-out]");
+  const zoomSlider = root.querySelector<HTMLInputElement>("[data-room-3d-zoom-slider]");
+  const status = root.querySelector<HTMLElement>("[data-room-3d-status]");
+  const configNode = root.querySelector<HTMLScriptElement>("[data-room-3d-config]");
+
+  if (
+    !(container instanceof HTMLElement) ||
+    !(canvas instanceof HTMLCanvasElement) ||
+    !(homeButton instanceof HTMLButtonElement) ||
+    !(status instanceof HTMLElement) ||
+    !(configNode instanceof HTMLScriptElement)
+  ) {
+    return () => {};
+  }
+
+  // Dynamic imports — Three.js only loads when user opens the 3D view
+  const [THREE, { OrbitControls }] = await Promise.all([
+    import("three"),
+    import("three/examples/jsm/controls/OrbitControls.js"),
+  ]);
+
+  const config = JSON.parse(configNode.textContent ?? "{}") as Room3DConfig;
+
+  // Build surface specs (inlined to use dynamically-imported THREE)
   if (config.walls.length < 4) {
     throw new Error(`Room requires 4 walls, got ${config.walls.length}`);
   }
@@ -64,6 +79,16 @@ function buildSurfaceSpecs(config: Room3DConfig) {
   const roomWidth = average(longWalls.map((wall) => wall.worldWidth));
   const roomDepth = average(shortWalls.map((wall) => wall.worldWidth));
   const roomHeight = config.wallHeight;
+
+  type SurfaceSpec = {
+    id: string;
+    label: string;
+    src: string;
+    width: number;
+    height: number;
+    position: InstanceType<typeof THREE.Vector3>;
+    rotation: InstanceType<typeof THREE.Euler>;
+  };
 
   const surfaces: SurfaceSpec[] = [
     {
@@ -116,36 +141,6 @@ function buildSurfaceSpecs(config: Room3DConfig) {
     });
   }
 
-  return {
-    roomWidth,
-    roomDepth,
-    roomHeight,
-    surfaces,
-  };
-}
-
-async function initializeRoom3D(root: HTMLElement) {
-  const container = root.querySelector<HTMLElement>("[data-room-3d]");
-  const canvas = root.querySelector<HTMLCanvasElement>("[data-room-3d-canvas]");
-  const homeButton = root.querySelector<HTMLButtonElement>("[data-room-3d-home]");
-  const zoomInBtn = root.querySelector<HTMLButtonElement>("[data-room-3d-zoom-in]");
-  const zoomOutBtn = root.querySelector<HTMLButtonElement>("[data-room-3d-zoom-out]");
-  const zoomSlider = root.querySelector<HTMLInputElement>("[data-room-3d-zoom-slider]");
-  const status = root.querySelector<HTMLElement>("[data-room-3d-status]");
-  const configNode = root.querySelector<HTMLScriptElement>("[data-room-3d-config]");
-
-  if (
-    !(container instanceof HTMLElement) ||
-    !(canvas instanceof HTMLCanvasElement) ||
-    !(homeButton instanceof HTMLButtonElement) ||
-    !(status instanceof HTMLElement) ||
-    !(configNode instanceof HTMLScriptElement)
-  ) {
-    return () => {};
-  }
-
-  const config = JSON.parse(configNode.textContent ?? "{}") as Room3DConfig;
-  const { roomWidth, roomDepth, roomHeight, surfaces } = buildSurfaceSpecs(config);
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
     alpha: true,
@@ -190,7 +185,7 @@ async function initializeRoom3D(root: HTMLElement) {
   roomGroup.add(floor);
 
   const loader = new THREE.TextureLoader();
-  const resources: Array<THREE.Texture | THREE.Material | THREE.BufferGeometry> = [floor.geometry, floor.material];
+  const resources: Array<THREE.Texture | THREE.Material | THREE.BufferGeometry> = [floor.geometry, floor.material as THREE.Material];
   const targetPosition = homePosition.clone();
   const targetLookAt = homeTarget.clone();
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;

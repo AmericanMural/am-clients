@@ -1,12 +1,14 @@
 ---
 import "../styles/global.css";
+import montserratLatin from "@fontsource-variable/montserrat/files/montserrat-latin-wght-normal.woff2";
 
 type Props = {
   title: string;
   description?: string;
+  preloadImage?: string;
 };
 
-const { title, description } = Astro.props;
+const { title, description, preloadImage } = Astro.props;
 ---
 
 <!doctype html>
@@ -16,6 +18,8 @@ const { title, description } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
+    {preloadImage && <link rel="preload" href={preloadImage} as="image" type="image/webp" fetchpriority="high" />}
+    <link rel="preload" href={montserratLatin} as="font" type="font/woff2" crossorigin="anonymous" />
     <script is:inline>
       const storedTheme = window.localStorage.getItem("am-clients-theme");
       const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
