@@ -371,9 +371,12 @@ function initializePresentations() {
     const lightbox = root.querySelector<HTMLDialogElement>("[data-gallery-lightbox]");
     const lightboxImage = root.querySelector<HTMLImageElement>("[data-gallery-lightbox-image]");
     const lightboxCaption = root.querySelector<HTMLElement>("[data-gallery-lightbox-caption]");
+    const lightboxPrev = root.querySelector<HTMLButtonElement>("[data-lightbox-prev]");
+    const lightboxNext = root.querySelector<HTMLButtonElement>("[data-lightbox-next]");
 
     let teardown3d: (() => void) | undefined;
     let threeDInitialized = false;
+    let currentLightboxIndex = 0;
 
     const setView = async (view: string) => {
       root.dataset.activeView = view;
@@ -401,20 +404,26 @@ function initializePresentations() {
       void setView(trigger.dataset.viewTrigger ?? "slider");
     };
 
+    const showLightboxImage = (index: number) => {
+      if (
+        !(lightboxImage instanceof HTMLImageElement) ||
+        !(lightboxCaption instanceof HTMLElement) ||
+        !galleryItems.length
+      ) return;
+
+      currentLightboxIndex = ((index % galleryItems.length) + galleryItems.length) % galleryItems.length;
+      const item = galleryItems[currentLightboxIndex];
+      lightboxImage.src = item.dataset.gallerySrc ?? "";
+      lightboxImage.alt = item.dataset.galleryAlt ?? "";
+      lightboxCaption.textContent = item.dataset.galleryLabel ?? "";
+    };
+
     const onGalleryClick = (event: Event) => {
       const button = event.currentTarget as HTMLButtonElement;
+      if (!(lightbox instanceof HTMLDialogElement)) return;
 
-      if (
-        !(lightbox instanceof HTMLDialogElement) ||
-        !(lightboxImage instanceof HTMLImageElement) ||
-        !(lightboxCaption instanceof HTMLElement)
-      ) {
-        return;
-      }
-
-      lightboxImage.src = button.dataset.gallerySrc ?? "";
-      lightboxImage.alt = button.dataset.galleryAlt ?? "";
-      lightboxCaption.textContent = button.dataset.galleryLabel ?? "";
+      const index = galleryItems.indexOf(button);
+      showLightboxImage(index);
       lightbox.showModal();
     };
 
@@ -424,14 +433,21 @@ function initializePresentations() {
       }
     };
 
+    const onLightboxPrev = () => showLightboxImage(currentLightboxIndex - 1);
+    const onLightboxNext = () => showLightboxImage(currentLightboxIndex + 1);
+
     triggers.forEach((trigger) => trigger.addEventListener("click", onTriggerClick));
     galleryItems.forEach((item) => item.addEventListener("click", onGalleryClick));
     lightbox?.addEventListener("click", onLightboxClick);
+    lightboxPrev?.addEventListener("click", onLightboxPrev);
+    lightboxNext?.addEventListener("click", onLightboxNext);
 
     root.__presentationCleanup = () => {
       triggers.forEach((trigger) => trigger.removeEventListener("click", onTriggerClick));
       galleryItems.forEach((item) => item.removeEventListener("click", onGalleryClick));
       lightbox?.removeEventListener("click", onLightboxClick);
+      lightboxPrev?.removeEventListener("click", onLightboxPrev);
+      lightboxNext?.removeEventListener("click", onLightboxNext);
       teardown3d?.();
     };
   });

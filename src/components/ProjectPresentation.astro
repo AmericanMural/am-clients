@@ -8,6 +8,9 @@ import Minus from "phosphor-astro/Minus.astro";
 import HandTap from "phosphor-astro/HandTap.astro";
 import CaretLeft from "phosphor-astro/CaretLeftBold.astro";
 import CaretRight from "phosphor-astro/CaretRightBold.astro";
+import ArrowsOut from "phosphor-astro/ArrowsOut.astro";
+import ArrowsIn from "phosphor-astro/ArrowsIn.astro";
+import XIcon from "phosphor-astro/X.astro";
 
 type ProjectImage = {
   image: ImageMetadata;
@@ -72,6 +75,20 @@ const room3dConfig = {
 
         <button
           type="button"
+          class="room__fullscreen-toggle"
+          data-fullscreen-toggle
+          aria-label="Enter fullscreen"
+        >
+          <span class="room__fullscreen-icon" data-fullscreen-icon="enter" aria-hidden="true">
+            <ArrowsOut width={20} height={20} />
+          </span>
+          <span class="room__fullscreen-icon" data-fullscreen-icon="exit" aria-hidden="true">
+            <ArrowsIn width={20} height={20} />
+          </span>
+        </button>
+
+        <button
+          type="button"
           class="room__theme-toggle"
           data-theme-toggle
           aria-label="Switch to dark mode"
@@ -121,10 +138,6 @@ const room3dConfig = {
             <p class="room__caption" data-room-loop-caption>
               1/{walls.length}
             </p>
-            <p class="room__hint" data-slider-hint>
-              <HandTap width={20} height={20} weight="fill" />
-              Click and drag
-            </p>
             <div class="room__controls">
               <button type="button" data-room-loop-prev aria-label="Previous wall">
                 <CaretLeft width={16} height={16} />
@@ -135,6 +148,10 @@ const room3dConfig = {
             </div>
           </div>
         </div>
+        <p class="room__hint" data-slider-hint>
+          <HandTap width={20} height={20} weight="fill" />
+          Click and drag
+        </p>
       </div>
 
       <div class="room__view room__view--3d" data-view-panel="3d" hidden>
@@ -164,7 +181,7 @@ const room3dConfig = {
             </button>
           </div>
           <p class="room__three-hint" data-room-3d-hint>
-            <HandTap width={28} height={28} weight="fill" />
+            <HandTap width={20} height={20} weight="fill" />
             Click and drag
           </p>
           <div class="room__three-loader" data-room-3d-status aria-live="polite">
@@ -212,15 +229,23 @@ const room3dConfig = {
     </footer>
 
     <dialog class="room__lightbox" data-gallery-lightbox>
-      <form method="dialog" class="room__lightbox-inner">
+      <form method="dialog" class="room__lightbox-close-form">
         <button type="submit" class="room__lightbox-close" aria-label="Close image">
-          Close
+          <XIcon width={18} height={18} />
         </button>
       </form>
       <figure class="room__lightbox-figure">
         <img data-gallery-lightbox-image alt="" />
         <figcaption data-gallery-lightbox-caption></figcaption>
       </figure>
+      <div class="room__lightbox-nav">
+        <button type="button" class="room__lightbox-prev" data-lightbox-prev aria-label="Previous image">
+          <CaretLeft width={16} height={16} />
+        </button>
+        <button type="button" class="room__lightbox-next" data-lightbox-next aria-label="Next image">
+          <CaretRight width={16} height={16} />
+        </button>
+      </div>
     </dialog>
 
     <script type="application/json" data-room-3d-config is:inline set:html={JSON.stringify(room3dConfig).replaceAll("<", "\\u003c")} />
@@ -265,20 +290,34 @@ const room3dConfig = {
     .room__heading {
       padding-bottom: 2rem;
     }
+
+    [data-fullscreen] {
+      display: block;
+      padding: 0;
+    }
+
+    [data-fullscreen] .room {
+      max-width: none;
+      height: 100dvh;
+      max-height: none;
+      margin: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    [data-fullscreen] .room__heading {
+      padding-bottom: 1.4rem;
+    }
   }
 
   .room:focus-visible {
-    box-shadow: 0 0 0 0.15rem rgba(61, 52, 39, 0.12) inset;
+    outline: none;
   }
 
   :root[data-theme="dark"] .room {
     background:
       linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)),
       rgba(9, 9, 10, 0.72);
-  }
-
-  :root[data-theme="dark"] .room:focus-visible {
-    box-shadow: 0 0 0 0.15rem rgba(255, 255, 255, 0.22) inset;
   }
 
   .room__menu {
@@ -339,6 +378,7 @@ const room3dConfig = {
 
   .room__mode-button,
   .room__theme-toggle,
+  .room__fullscreen-toggle,
   .room__controls button,
   .room__three-nav button,
   .room__lightbox-close {
@@ -357,14 +397,11 @@ const room3dConfig = {
     border-color: var(--line-soft);
     padding: 0.58rem 0.9rem;
     min-height: 2.4rem;
+    display: inline-grid;
+    place-items: center;
     font-size: 0.875rem;
     font-weight: 600;
     letter-spacing: 0.01em;
-  }
-
-  .room__mode-button[aria-pressed="true"] {
-    border-color: var(--line-strong);
-    box-shadow: inset 0 0 0 1px rgba(61, 52, 39, 0.05);
   }
 
   .room__theme-toggle {
@@ -376,8 +413,36 @@ const room3dConfig = {
     place-items: center;
   }
 
+  .room__fullscreen-toggle {
+    display: none;
+  }
+
+  @media (min-width: 48rem) {
+    .room__fullscreen-toggle {
+      justify-self: start;
+      padding: 0.58rem;
+      min-height: 2.5rem;
+      min-width: 2.5rem;
+      display: inline-grid;
+      place-items: center;
+    }
+  }
+
+  .room__fullscreen-icon[data-fullscreen-icon="exit"] {
+    display: none;
+  }
+
+  [data-fullscreen] .room__fullscreen-icon[data-fullscreen-icon="enter"] {
+    display: none;
+  }
+
+  [data-fullscreen] .room__fullscreen-icon[data-fullscreen-icon="exit"] {
+    display: inline;
+  }
+
   :root[data-theme="dark"] .room__mode-button,
   :root[data-theme="dark"] .room__theme-toggle,
+  :root[data-theme="dark"] .room__fullscreen-toggle,
   :root[data-theme="dark"] .room__controls button,
   :root[data-theme="dark"] .room__lightbox-close {
     background: var(--bg-1);
@@ -396,29 +461,31 @@ const room3dConfig = {
 
   .room__mode-button:hover,
   .room__theme-toggle:hover,
+  .room__fullscreen-toggle:hover,
   .room__controls button:hover,
   .room__three-nav button:hover,
   .room__lightbox-close:hover {
     border-color: var(--line-strong);
     outline: none;
-    transform: translateY(-1px);
   }
 
   .room__mode-button:focus-visible,
   .room__theme-toggle:focus-visible,
+  .room__fullscreen-toggle:focus-visible,
   .room__controls button:focus-visible,
   .room__three-nav button:focus-visible,
   .room__lightbox-close:focus-visible {
     border-color: var(--line-strong);
     outline: 2px solid var(--ink-1);
     outline-offset: 2px;
-    transform: translateY(-1px);
   }
 
   :root[data-theme="dark"] .room__mode-button:hover,
   :root[data-theme="dark"] .room__mode-button:focus-visible,
   :root[data-theme="dark"] .room__theme-toggle:hover,
   :root[data-theme="dark"] .room__theme-toggle:focus-visible,
+  :root[data-theme="dark"] .room__fullscreen-toggle:hover,
+  :root[data-theme="dark"] .room__fullscreen-toggle:focus-visible,
   :root[data-theme="dark"] .room__controls button:hover,
   :root[data-theme="dark"] .room__controls button:focus-visible,
   :root[data-theme="dark"] .room__lightbox-close:hover,
@@ -438,7 +505,8 @@ const room3dConfig = {
     border-color: rgba(255, 255, 255, 0.28);
   }
 
-  .room__theme-icon {
+  .room__theme-icon,
+  .room__fullscreen-icon {
     display: inline-grid;
     place-items: center;
     line-height: 0;
@@ -475,6 +543,7 @@ const room3dConfig = {
   }
 
   .room__view {
+    position: relative;
     display: grid;
     grid-template-rows: minmax(0, 1fr) auto auto;
     gap: 0.7rem;
@@ -558,15 +627,20 @@ const room3dConfig = {
   }
 
   .room__hint {
+    position: absolute;
+    bottom: calc(var(--room-inset) + 0.6rem);
+    left: 0;
+    right: 0;
+    z-index: 2;
     margin: 0;
     display: flex;
     align-items: center;
     gap: 0.35rem;
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--ink-1);
-    text-align: center;
+    color: var(--ink-0);
     justify-content: center;
+    pointer-events: none;
     transition: opacity 1.2s ease;
   }
 
@@ -577,7 +651,7 @@ const room3dConfig = {
 
   .room__toolbar {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: 1fr auto;
     align-items: center;
     gap: 0.65rem;
     padding-left: 0.35rem;
@@ -607,26 +681,21 @@ const room3dConfig = {
 
   .room__three-hint {
     position: absolute;
-    inset: 0;
+    bottom: calc(var(--room-inset) + 0.6rem);
+    left: 0;
+    right: 0;
     z-index: 2;
     margin: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
-    font-size: 1.25rem;
-    letter-spacing: 0.03em;
+    gap: 0.35rem;
+    font-size: 0.875rem;
+    font-weight: 600;
     color: white;
-    text-shadow:
-      0 0 16px rgba(0, 0, 0, 0.7),
-      0 0 48px rgba(0, 0, 0, 0.5),
-      0 0 80px rgba(0, 0, 0, 0.3);
+    mix-blend-mode: difference;
     pointer-events: none;
     transition: opacity 1.2s ease;
-  }
-
-  .room__three-hint svg {
-    filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.4));
   }
 
   .room__three-hint[hidden] {
@@ -819,15 +888,50 @@ const room3dConfig = {
     backdrop-filter: blur(6px);
   }
 
-  .room__lightbox-inner {
-    position: absolute;
+  .room__lightbox-close-form {
+    position: fixed;
     top: 1rem;
     right: 1rem;
     z-index: 2;
   }
 
-  .room__lightbox-close {
-    padding: 0.65rem 0.95rem;
+  .room__lightbox-close,
+  .room__lightbox-prev,
+  .room__lightbox-next {
+    padding: 0.58rem;
+    min-height: 2.5rem;
+    min-width: 2.5rem;
+    display: inline-grid;
+    place-items: center;
+    line-height: 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    background: rgba(15, 15, 17, 0.72);
+    color: #fff;
+    cursor: pointer;
+    transition: border-color 160ms ease;
+  }
+
+  .room__lightbox-close:hover,
+  .room__lightbox-prev:hover,
+  .room__lightbox-next:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  .room__lightbox-close:focus-visible,
+  .room__lightbox-prev:focus-visible,
+  .room__lightbox-next:focus-visible {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  .room__lightbox-nav {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 2;
+    display: flex;
+    gap: 0.5rem;
   }
 
   .room__lightbox-figure {
@@ -942,4 +1046,27 @@ const room3dConfig = {
   import "../scripts/room-loop";
   import "../scripts/theme-toggle";
   import "../scripts/project-presentation";
+
+  const fsBtn = document.querySelector<HTMLButtonElement>("[data-fullscreen-toggle]");
+  const presentation = document.querySelector<HTMLElement>("[data-presentation]");
+  if (fsBtn && presentation && document.fullscreenEnabled) {
+    fsBtn.addEventListener("click", () => {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        document.documentElement.requestFullscreen();
+      }
+    });
+    document.addEventListener("fullscreenchange", () => {
+      const isFs = !!document.fullscreenElement;
+      fsBtn.setAttribute("aria-label", isFs ? "Exit fullscreen" : "Enter fullscreen");
+      if (isFs) {
+        presentation.setAttribute("data-fullscreen", "");
+      } else {
+        presentation.removeAttribute("data-fullscreen");
+      }
+    });
+  } else if (fsBtn) {
+    fsBtn.style.display = "none";
+  }
 </script>
