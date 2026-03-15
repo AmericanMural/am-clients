@@ -89,46 +89,48 @@ const room3dConfig = {
 
     <div class="room__viewstack">
       <div class="room__view room__view--slider" data-view-panel="slider">
-        <div class="room__viewport" data-room-loop-viewport>
-          <div class="room__container">
-            {
-              walls.map((wall, index) => (
-                <figure
-                  class="room__slide"
-                  data-wall-slide
-                  data-slide-index={index}
-                  data-slide-label={wall.label ?? `Wall ${index + 1}`}
-                >
-                  <img
-                    src={wall.image.src}
-                    width={wall.image.width}
-                    height={wall.image.height}
-                    alt={wall.alt}
-                    loading={index === 0 ? "eager" : "lazy"}
-                    decoding="async"
-                    fetchpriority={index === 0 ? "high" : "auto"}
-                  />
-                </figure>
-              ))
-            }
+        <div class="room__slider-inner">
+          <div class="room__viewport" data-room-loop-viewport>
+            <div class="room__container">
+              {
+                walls.map((wall, index) => (
+                  <figure
+                    class="room__slide"
+                    data-wall-slide
+                    data-slide-index={index}
+                    data-slide-label={wall.label ?? `Wall ${index + 1}`}
+                  >
+                    <img
+                      src={wall.image.src}
+                      width={wall.image.width}
+                      height={wall.image.height}
+                      alt={wall.alt}
+                      loading={index === 0 ? "eager" : "lazy"}
+                      decoding="async"
+                      fetchpriority={index === 0 ? "high" : "auto"}
+                    />
+                  </figure>
+                ))
+              }
+            </div>
           </div>
-        </div>
 
-        <div class="room__caption-row">
-          <p class="room__caption" data-room-loop-caption>
-            {walls[0]?.label ?? "Wall 1"}
-          </p>
-          <p class="room__hint" data-slider-hint>Drag, swipe or scroll</p>
-        </div>
+          <div class="room__caption-row">
+            <p class="room__caption" data-room-loop-caption>
+              {walls[0]?.label ?? "Wall 1"}
+            </p>
+            <p class="room__hint" data-slider-hint>Drag, swipe or scroll</p>
+          </div>
 
-        <div class="room__toolbar">
-          <div class="room__controls">
-            <button type="button" data-room-loop-prev aria-label="Previous wall">
-              Prev
-            </button>
-            <button type="button" data-room-loop-next aria-label="Next wall">
-              Next
-            </button>
+          <div class="room__toolbar">
+            <div class="room__controls">
+              <button type="button" data-room-loop-prev aria-label="Previous wall">
+                Prev
+              </button>
+              <button type="button" data-room-loop-next aria-label="Next wall">
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -343,8 +345,17 @@ const room3dConfig = {
   :root[data-theme="dark"] .room__mode-button,
   :root[data-theme="dark"] .room__theme-toggle,
   :root[data-theme="dark"] .room__controls button,
-  :root[data-theme="dark"] .room__three-nav button,
   :root[data-theme="dark"] .room__lightbox-close {
+    background: var(--bg-1);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .room__three-nav button {
+    background: rgba(252, 251, 248, 0.72);
+    border-color: var(--line-soft);
+  }
+
+  :root[data-theme="dark"] .room__three-nav button {
     background: rgba(15, 15, 17, 0.72);
     border-color: rgba(255, 255, 255, 0.15);
   }
@@ -370,10 +381,19 @@ const room3dConfig = {
   :root[data-theme="dark"] .room__theme-toggle:focus-visible,
   :root[data-theme="dark"] .room__controls button:hover,
   :root[data-theme="dark"] .room__controls button:focus-visible,
-  :root[data-theme="dark"] .room__three-nav button:hover,
-  :root[data-theme="dark"] .room__three-nav button:focus-visible,
   :root[data-theme="dark"] .room__lightbox-close:hover,
   :root[data-theme="dark"] .room__lightbox-close:focus-visible {
+    background: var(--bg-2);
+    border-color: rgba(255, 255, 255, 0.28);
+  }
+
+  .room__three-nav button:hover,
+  .room__three-nav button:focus-visible {
+    background: rgba(252, 251, 248, 0.85);
+  }
+
+  :root[data-theme="dark"] .room__three-nav button:hover,
+  :root[data-theme="dark"] .room__three-nav button:focus-visible {
     background: rgba(15, 15, 17, 0.85);
     border-color: rgba(255, 255, 255, 0.28);
   }
@@ -422,17 +442,21 @@ const room3dConfig = {
 
   .room__view--slider,
   .room__view--gallery {
-    padding: calc(var(--room-inset) + 3rem) var(--room-inset) var(--room-inset);
+    grid-template-rows: minmax(0, 1fr);
+    padding: calc(var(--room-inset) + 3rem) 0 0;
+    overflow: hidden;
   }
 
   .room__view--3d {
     grid-template-rows: minmax(0, 1fr);
   }
 
-  .room__view--gallery {
-    grid-template-rows: minmax(0, 1fr);
-    padding-inline: 0;
-    padding-bottom: 0;
+  .room__slider-inner {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto auto;
+    gap: 0.7rem;
+    padding: var(--room-inset);
+    border-top: 0.5px solid var(--line-soft);
     overflow: hidden;
   }
 
@@ -593,7 +617,7 @@ const room3dConfig = {
     gap: 0;
     border-radius: 999px;
     border: 0.75px solid var(--line-soft);
-    background: var(--bg-0);
+    background: rgba(252, 251, 248, 0.72);
     padding: 0.25rem 0;
     transition:
       background-color 160ms ease,
@@ -701,7 +725,7 @@ const room3dConfig = {
 
   .room__gallery {
     overflow: auto;
-    border-top: 0.75px solid var(--line-soft);
+    border-top: 0.5px solid var(--line-soft);
   }
 
   .room__gallery-inner {
@@ -710,7 +734,6 @@ const room3dConfig = {
     max-width: 40rem;
     margin-inline: auto;
     padding: var(--room-inset);
-    padding-top: 1.6rem;
     gap: 0.8rem;
   }
 
@@ -792,17 +815,6 @@ const room3dConfig = {
       --room-inset: 0.85rem;
     }
 
-    .room__controls {
-      width: 100%;
-    }
-
-    .room__controls button {
-      flex: 1 1 0;
-    }
-
-    .room__toolbar {
-      align-items: stretch;
-    }
   }
 
   @media (max-height: 28rem) and (orientation: landscape) {

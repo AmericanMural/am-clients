@@ -5,8 +5,8 @@
   --bg-2: #fcfbf8;
   --ink-0: rgba(35, 29, 21, 0.96);
   --ink-1: rgba(65, 57, 45, 0.72);
-  --line-soft: rgba(61, 52, 39, 0.1);
-  --line-strong: rgba(61, 52, 39, 0.18);
+  --line-soft: rgba(61, 52, 39, 0.18);
+  --line-strong: rgba(61, 52, 39, 0.3);
   --shadow-soft: 0 24px 80px rgba(72, 58, 36, 0.14);
   font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", Helvetica, sans-serif;
 }
@@ -18,8 +18,8 @@
   --bg-2: #242428;
   --ink-0: rgba(255, 255, 255, 0.96);
   --ink-1: rgba(255, 255, 255, 0.68);
-  --line-soft: rgba(255, 255, 255, 0.12);
-  --line-strong: rgba(255, 255, 255, 0.2);
+  --line-soft: rgba(255, 255, 255, 0.2);
+  --line-strong: rgba(255, 255, 255, 0.32);
   --shadow-soft: 0 24px 80px rgba(0, 0, 0, 0.32);
 }
 
