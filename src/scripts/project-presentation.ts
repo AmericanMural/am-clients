@@ -157,7 +157,7 @@ async function initializeRoom3D(root: HTMLElement) {
 
   const controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
-  controls.enablePan = true;
+  controls.enablePan = false;
   controls.dampingFactor = 0.08;
   controls.rotateSpeed = -0.58;
   controls.zoomSpeed = 0.82;
