@@ -333,7 +333,7 @@ const room3dConfig = {
   .room__menu-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.65rem;
+    gap: 0.5rem;
     align-items: center;
     justify-content: flex-end;
   }
@@ -844,10 +844,14 @@ const room3dConfig = {
   .room__gallery-inner {
     display: grid;
     grid-template-columns: 1fr;
-    max-width: 40rem;
+    max-width: 52rem;
     margin-inline: auto;
     padding: var(--room-inset);
     gap: 0.8rem;
+  }
+
+  [data-fullscreen] .room__gallery-inner {
+    max-width: 68rem;
   }
 
   .room__gallery-item {
