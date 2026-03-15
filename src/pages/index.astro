@@ -8,7 +8,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       <p class="home-card__eyebrow">AM Clients</p>
       <h1>Direct-link presentation viewer</h1>
       <p>
-        This root page stays intentionally quiet. Open your project with the link you were shared.
+        Open your project using the link that was shared with you.
       </p>
     </section>
   </main>
@@ -27,9 +27,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     padding: 1.5rem;
     border: 1px solid var(--line-soft);
     border-radius: 1.5rem;
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)),
-      rgba(9, 9, 10, 0.78);
+    background: var(--bg-2);
     box-shadow: var(--shadow-soft);
   }
 
@@ -43,6 +41,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
   h1 {
     margin: 0.4rem 0 0.9rem;
+    font-family: var(--font-display);
+    font-weight: 800;
     font-size: clamp(1.8rem, 4vw, 3rem);
     letter-spacing: -0.05em;
   }

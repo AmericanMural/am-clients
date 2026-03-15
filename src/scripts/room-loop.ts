@@ -20,6 +20,7 @@ function initializeRoomLoops() {
     const prevButton = root.querySelector<HTMLButtonElement>("[data-room-loop-prev]");
     const nextButton = root.querySelector<HTMLButtonElement>("[data-room-loop-next]");
     const caption = root.querySelector<HTMLElement>("[data-room-loop-caption]");
+    const hint = root.querySelector<HTMLElement>("[data-slider-hint]");
     const slides = Array.from(root.querySelectorAll<HTMLElement>("[data-wall-slide]"));
 
     if (!(viewport instanceof HTMLElement) || slides.length === 0) {
@@ -41,8 +42,7 @@ function initializeRoomLoops() {
       root.dataset.currentIndex = String(currentIndex);
 
       if (caption) {
-        const slide = slides[currentIndex];
-        caption.textContent = slide?.dataset.slideLabel ?? `Wall ${currentIndex + 1}`;
+        caption.textContent = `${currentIndex + 1}/${slides.length}`;
       }
     };
 
@@ -80,6 +80,10 @@ function initializeRoomLoops() {
       engine.animation.start();
     };
 
+    const hideHint = () => {
+      if (hint) hint.hidden = true;
+    };
+
     const onPrevClick = () => embla.scrollPrev();
     const onNextClick = () => embla.scrollNext();
 
@@ -91,6 +95,7 @@ function initializeRoomLoops() {
     embla.on("init", updateState);
     embla.on("reInit", updateState);
     embla.on("select", updateState);
+    embla.on("scroll", hideHint, { once: true });
     updateState();
 
     root.__roomLoopCleanup = () => {

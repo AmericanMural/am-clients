@@ -1,3 +1,5 @@
+@import "@fontsource-variable/montserrat/wght.css";
+
 :root {
   color-scheme: light;
   --bg-0: #fcfbf8;
@@ -8,7 +10,9 @@
   --line-soft: rgba(61, 52, 39, 0.18);
   --line-strong: rgba(61, 52, 39, 0.3);
   --shadow-soft: 0 24px 80px rgba(72, 58, 36, 0.14);
-  font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", Helvetica, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --font-display: "Montserrat Variable", "Montserrat", "Arial Black", sans-serif;
+  font-family: var(--font-body);
 }
 
 :root[data-theme="dark"] {

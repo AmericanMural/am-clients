@@ -167,7 +167,7 @@ async function initializeRoom3D(root: HTMLElement) {
   controls.rotateSpeed = 0.58;
   controls.zoomSpeed = 0.82;
   controls.panSpeed = 0.75;
-  controls.minDistance = 0.6;
+  controls.minDistance = 0.25;
   controls.maxDistance = 5;
   controls.minPolarAngle = Math.PI / 2 - 0.12;
   controls.maxPolarAngle = Math.PI - 0.06;
