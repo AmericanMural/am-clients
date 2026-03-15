@@ -32,6 +32,7 @@ function initializeRoomLoops() {
       dragFree: true,
       containScroll: false,
     });
+    // Embla internal API — pinned to 8.6.0; verify after upgrades
     const engine = embla.internalEngine();
 
     const updateState = () => {
@@ -40,7 +41,8 @@ function initializeRoomLoops() {
       root.dataset.currentIndex = String(currentIndex);
 
       if (caption) {
-        caption.textContent = `${currentIndex + 1}/${slides.length}`;
+        const slide = slides[currentIndex];
+        caption.textContent = slide?.dataset.slideLabel ?? `Wall ${currentIndex + 1}`;
       }
     };
 

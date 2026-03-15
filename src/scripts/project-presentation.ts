@@ -44,6 +44,10 @@ function cleanupPresentations() {
 }
 
 function buildSurfaceSpecs(config: Room3DConfig) {
+  if (config.walls.length < 4) {
+    throw new Error(`Room requires 4 walls, got ${config.walls.length}`);
+  }
+
   const derivedWalls = config.walls.map((wall) => ({
     ...wall,
     worldWidth: deriveWallWidth(wall, config.wallHeight),
@@ -312,7 +316,7 @@ async function initializeRoom3D(root: HTMLElement) {
     if (text) text.textContent = "Could not load room";
     const spinner = status.querySelector(".room__spinner");
     if (spinner) (spinner as HTMLElement).style.display = "none";
-    throw error;
+    console.error("Room 3D load failed:", error);
   }
 
   const render = () => {
