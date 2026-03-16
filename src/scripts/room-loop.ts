@@ -92,6 +92,11 @@ function initializeRoomLoops() {
     root.addEventListener("keydown", onKeydown);
     viewport.addEventListener("wheel", onWheel, { passive: false });
 
+    const onPointerDown = () => { viewport.style.cursor = "grabbing"; };
+    const onPointerUp = () => { viewport.style.cursor = ""; };
+
+    embla.on("pointerDown", onPointerDown);
+    embla.on("pointerUp", onPointerUp);
     embla.on("init", updateState);
     embla.on("reInit", updateState);
     embla.on("select", updateState);

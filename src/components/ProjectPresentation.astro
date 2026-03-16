@@ -580,6 +580,7 @@ const room3dConfig = {
     border: 1px solid var(--line-soft);
     background: var(--bg-0);
     min-height: 0;
+    cursor: grab;
   }
 
   :root[data-theme="dark"] .room__viewport {
@@ -680,6 +681,7 @@ const room3dConfig = {
     height: 100%;
     min-height: 100%;
     touch-action: none;
+    cursor: grab;
   }
 
   .room__three-hint {
@@ -744,6 +746,16 @@ const room3dConfig = {
     border: none;
     background: none;
     border-radius: 0;
+    color: var(--ink-1);
+    transition: color 160ms ease;
+  }
+
+  .room__zoom-group button:hover {
+    color: var(--ink-0);
+  }
+
+  :root[data-theme="dark"] .room__zoom-group button:hover {
+    color: rgba(255, 255, 255, 0.95);
   }
 
   :root[data-theme="dark"] .room__zoom-group {
@@ -754,6 +766,20 @@ const room3dConfig = {
   :root[data-theme="dark"] .room__zoom-group button {
     background: none;
     border-color: transparent;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .room__zoom-group button:hover,
+  .room__zoom-group button:focus-visible {
+    background: none;
+    border: none;
+    outline: none;
+  }
+
+  :root[data-theme="dark"] .room__zoom-group button:hover,
+  :root[data-theme="dark"] .room__zoom-group button:focus-visible {
+    background: none;
+    border: none;
   }
 
   .room__zoom-slider {

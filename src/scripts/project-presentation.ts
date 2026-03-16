@@ -214,6 +214,10 @@ async function initializeRoom3D(root: HTMLElement) {
   controls.addEventListener("start", () => {
     transitioning = false;
     if (threeDHint) threeDHint.hidden = true;
+    canvas.style.cursor = "grabbing";
+  });
+  controls.addEventListener("end", () => {
+    canvas.style.cursor = "grab";
   });
 
   const onHomeClick = () => {
