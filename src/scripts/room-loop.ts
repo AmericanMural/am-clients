@@ -73,7 +73,7 @@ function initializeRoomLoops() {
           : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
             ? viewport.clientWidth
             : 1;
-      const smoothDelta = engine.axis.direction(dominantDelta * modeFactor * 0.7);
+      const smoothDelta = engine.axis.direction(-dominantDelta * modeFactor * 0.7);
 
       engine.scrollBody.useFriction(0.3).useDuration(0.75);
       engine.target.add(smoothDelta);
